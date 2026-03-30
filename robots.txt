@@ -2,6 +2,7 @@
 User-agent: *
 Allow: /
 Disallow: /releases/
+Disallow: /api/
 
 # Link to your sitemap to help bots find content
 Sitemap: https://debugofthe67.github.io/sitemap.xml
