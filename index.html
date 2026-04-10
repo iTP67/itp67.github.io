@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Pro Ultimate</title>
+    <style>
+        :root {
+            --bg-color: #f2f2f7;
+            --secondary-bg: #ffffff;
+            --text-color: #000000;
+            --border-color: #e5e5ea;
+            --tab-bg: rgba(255, 255, 255, 0.9);
+            --accent: #007aff; 
+            --subnav-bg: #e3e3e8;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --secondary-bg: #1c1c1e;
+            --text-color: #ffffff;
+            --border-color: #38383a;
+            --tab-bg: rgba(28, 28, 30, 0.9);
+            --subnav-bg: #2c2c2e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            transition: background 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Layout */
+        .page { display: none; padding: 20px 16px 120px 16px; animation: fadeIn 0.2s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h2 { font-size: 28px; font-weight: 700; margin: 20px 0 15px; letter-spacing: -0.5px; }
+
+        /* Sub-Nav (Home Category Switcher) */
+        .sub-nav { display: flex; background: var(--subnav-bg); padding: 2px; border-radius: 10px; margin-bottom: 20px; }
+        .sub-item { flex: 1; text-align: center; padding: 8px 0; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.2s; color: #8e8e93; }
+        .sub-item.active { background: var(--secondary-bg); color: var(--text-color); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* UI Lists */
+        .list-group { background: var(--secondary-bg); border-radius: 12px; overflow: hidden; margin-bottom: 25px; }
+        .row { display: flex; align-items: center; padding: 12px 16px; text-decoration: none; color: inherit; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .row:last-child { border-bottom: none; }
+        
+        .app-icon { 
+            width: 54px; height: 54px; border-radius: 12px; margin-right: 15px;
+            background-size: cover; background-position: center; flex-shrink: 0;
+            border: 0.5px solid rgba(0,0,0,0.1); background-color: #eee;
+        }
+        .content { flex-grow: 1; }
+        .title { display: block; font-weight: 600; font-size: 17px; }
+        .subtitle { display: block; font-size: 13px; color: #8e8e93; }
+        .btn-get { background: rgba(0,0,0,0.05); color: var(--accent); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; text-transform: uppercase; }
+        [data-theme="dark"] .btn-get { background: rgba(255,255,255,0.1); }
+
+        /* Color Picker */
+        .color-row { display: flex; flex-wrap: wrap; gap: 12px; padding: 5px 0; }
+        .color-dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+        .color-dot.active { border-color: var(--text-color); transform: scale(1.1); }
+
+        /* FAQ Accordion */
+        .faq-row { border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .faq-q { display: flex; justify-content: space-between; padding: 14px 16px; font-weight: 500; }
+        .faq-a { display: none; padding: 0 16px 14px 16px; font-size: 14px; color: #8e8e93; line-height: 1.4; }
+        .faq-row.open .faq-a { display: block; }
+        .arrow { color: #c7c7cc; transition: transform 0.2s; font-weight: bold; }
+        .faq-row.open .arrow { transform: rotate(90deg); }
+
+        /* Nav & Overlays */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--tab-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; padding-bottom: env(safe-area-inset-bottom, 20px); z-index: 1000; }
+        .nav-item { padding: 10px 0; text-align: center; flex: 1; color: #8e8e93; font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .nav-item svg { width: 22px; height: 22px; margin-bottom: 2px; fill: currentColor; }
+        .nav-item.active { color: var(--accent); }
+
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .popup { background: var(--secondary-bg); width: 280px; border-radius: 22px; padding: 25px; text-align: center; position: relative; }
+        .close-x { position: absolute; top: 12px; right: 15px; font-size: 22px; color: #8e8e93; cursor: pointer; }
+        .p-bar-bg { background: #e5e5ea; height: 6px; border-radius: 3px; margin: 20px 0; overflow: hidden; }
+        .p-bar { background: var(--accent); width: 0%; height: 100%; transition: width 2s linear; }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="page active">
+        <h2>Home</h2>
+        <div class="sub-nav">
+            <div class="sub-item active" onclick="filterHome('dns', this)">Anti Revoke</div>        
+            <div class="sub-item" onclick="filterHome('esign', this)">ESign</div>
+            <div class="sub-item" onclick="filterHome('ksign', this)">KSign</div>
+            <div class="sub-item" onclick="filterHome('scarlet', this)">Scarlet</div>
+        </div>
+
+        <div id="section-dns" class="home-section">
+            <div class="list-group">
+                <div class="row" onclick="startInstall('https://tp67.pages.dev/releases/TP67.mobileconfig')">
+                    <div class="app-icon" style="background-image: url('');"></div>
+                    <div class="content"><span class="title">Anti Revoke</span><span class="subtitle">No Blacklist + No Revoke</span></div>
+                    <div class="btn-get">Install</div>
+                </div>
+                <div class="row" onclick="startInstall('https://github.com/royilkom-alt/cert/raw/refs/heads/main/XL%20AXIATA,%20PT%20TBK.zip')">
+                    <div class="app-icon" style="background-image: url('');"></div>
+                    <div class="content"><span class="title">Anti Revoke</span><span class="subtitle">Cert XL</span></div>
+                    <div class="btn-get">Download</div>
+                </div>
+            </div>
+        </div>        
+
+        <div id="section-esign" class="home-section" style="display:none;">
+            <div class="list-group">
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://debugofthe67.github.io/api/esign_xl.plist')">
+                    <div class="app-icon" style="background-image: url('https://i.imgur.com/ptoEbcym.png');"></div>
+                    <div class="content"><span class="title">ESign</span><span class="subtitle">Xl Cert</span></div>
+                    <div class="btn-get">GET</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-ksign" class="home-section" style="display:none;">
+            <div class="list-group">
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://tp67.pages.dev/api/ksign_xl.plist')">
+                    <div class="app-icon" style="background-image: url('https://web.archive.org/web/20260104201508im_/https://khoindvn.io.vn/img/pf/favicon.ico');"></div>
+                    <div class="content"><span class="title">KSign</span><span class="subtitle">XL CERT</span></div>
+                    <div class="btn-get">GET</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-scarlet" class="home-section" style="display:none;">
+            <div class="list-group">
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://tp67.pages.dev/releases/scarletforevermark.plist')">
+                    <div class="app-icon" style="background-image: url('data:image/jpeg;base64,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');"></div>
+                    <div class="content"><span class="title">Scarlet</span><span class="subtitle">XL Cert</span></div>
+                    <div class="btn-get">GET</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="apps" class="page">
+        <h2>Apps</h2>
+        <div class="list-group">
+          <p> Comming soon</p>
+        </div>
+    </div>
+
+    <div id="faq" class="page">
+        <h2>Help</h2>
+        <div class="list-group">
+            <div class="faq-row" onclick="this.classList.toggle('open')">
+                <div class="faq-q">Untrusted Developer? <span class="arrow">›</span></div>
+                <div class="faq-a">Go to Settings>General>Vpn And Device Management (Profiles if on older version of iOS) and click on the certificate of the app and tap trust</div>
+            </div>
+            <div class="faq-row" onclick="this.classList.toggle('open')">
+                <div class="faq-q">Is this free? <span class="arrow">›</span></div>
+                <div class="faq-a">Yes, all links and utilities provided here are free to access for our community.</div>
+            </div>
+                      <div class="faq-row" onclick="this.classList.toggle('open')">
+                <div class="faq-q">Revoked? <span class="arrow">›</span></div>
+                <div class="faq-a">Use my Anti Revoke or Erase your device (Backup if needed).</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings" class="page">
+        <h2>Settings</h2>
+        <p style="font-size: 12px; color: grey; margin: 10px 5px; text-transform: uppercase;">Accent Color</p>
+        <div class="list-group" style="padding: 15px;">
+            <div class="color-row">
+                <div class="color-dot active" style="background:#007aff;" onclick="setAccent('#007aff', this)"></div>
+                <div class="color-dot" style="background:#ff3b30;" onclick="setAccent('#ff3b30', this)"></div>
+                <div class="color-dot" style="background:#34c759;" onclick="setAccent('#34c759', this)"></div>
+                <div class="color-dot" style="background:#af52de;" onclick="setAccent('#af52de', this)"></div>
+                <div class="color-dot" style="background:#ff9500;" onclick="setAccent('#ff9500', this)"></div>
+            </div>
+        </div>
+        <div class="list-group">
+            <div class="row" style="justify-content: space-between;">
+                <span>Dark Mode</span>
+                <input type="checkbox" onchange="document.body.setAttribute('data-theme', this.checked ? 'dark' : 'light')">
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="nav('home', this)">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
+        </div>
+        <div class="nav-item" onclick="nav('apps', this)">
+            <svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>Apps
+        </div>
+        <div class="nav-item" onclick="nav('faq', this)">
+            <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>Help
+        </div>
+        <div class="nav-item" onclick="nav('settings', this)">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Settings
+        </div>
+    </nav>
+
+    <div id="installOverlay" class="overlay">
+        <div class="popup">
+            <span class="close-x" onclick="closePop()">×</span>
+            <h3>Processing...</h3>
+            <div class="p-bar-bg"><div id="pBar" class="p-bar"></div></div>
+            <p style="font-size: 13px; color: #8e8e93;">Connecting to secure server...</p>
+        </div>
+    </div>
+
+    <script>
+        var timer;
+        var target = "";
+
+        // Page Navigation
+        function nav(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // Home Section Filter
+        function filterHome(sectionId, el) {
+            document.querySelectorAll('.home-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.sub-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('section-' + sectionId).style.display = 'block';
+            el.classList.add('active');
+        }
+
+        // Accent Color
+        function setAccent(color, el) {
+            document.documentElement.style.setProperty('--accent', color);
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Installation Logic
+        function startInstall(url) {
+            target = url;
+            const bar = document.getElementById('pBar');
+            bar.style.transition = 'none'; // Reset transition
+            bar.style.width = '0%';
+            
+            document.getElementById('installOverlay').style.display = 'flex';
+            
+            setTimeout(() => {
+                bar.style.transition = 'width 2s linear';
+                bar.style.width = '100%';
+            }, 50);
+
+            timer = setTimeout(() => {
+                window.location.href = target;
+            }, 2100);
+        }
+
+        function closePop() {
+            clearTimeout(timer);
+            document.getElementById('installOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
