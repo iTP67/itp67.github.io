@@ -90,7 +90,61 @@
         .close-x { position: absolute; top: 12px; right: 15px; font-size: 22px; color: #8e8e93; cursor: pointer; }
         .p-bar-bg { background: #e5e5ea; height: 6px; border-radius: 3px; margin: 20px 0; overflow: hidden; }
         .p-bar { background: var(--accent); width: 0%; height: 100%; transition: width 2s linear; }
+   .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+/* Remove the default h2 margin so it aligns with the dot */
+.section-header h2 {
+    margin: 0;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    background: var(--secondary-bg);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.status-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8e8e93;
+    text-transform: uppercase;
+    margin-right: 6px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-online {
+    background-color: #34c759;
+    box-shadow: 0 0 5px rgba(52, 199, 89, 0.6);
+    animation: pulse-simple 2s infinite;
+}
+
+.status-offline {
+    background-color: #ff3b30;
+    box-shadow: 0 0 5px rgba(255, 59, 48, 0.6);
+}
+
+@keyframes pulse-simple {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+   
     </style>
+   
 </head>
 <body>
 
@@ -165,9 +219,28 @@
     </div>
 
     <div id="apps" class="page">
+            <div class="status-indicator">
+            <span class="status-text">Status: Signed</span>
+            <span class="status-dot status-online"></span>
+        </div>
         <h2>Apps</h2>
+
         <div class="list-group">
-          <p> Comming soon</p>
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://itp67.github.io/api/dop.plist')">
+                    <div class="app-icon" style="background-image: url('https://i.imgur.com/N8QVM1jm.jpeg');"></div>
+                    <div class="content"><span class="title">Dopamine</span><span class="subtitle">iOS 15-16.7.15</span></div>
+                    <div class="btn-get">GET</div>
+                </div>
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://itp67.github.io/api/trollx.plist')">
+                    <div class="app-icon" style="background-image: url('https://i.imgur.com/t7E5POXm.jpeg');"></div>
+                    <div class="content"><span class="title">TrollInstallerX</span><span class="subtitle">iOS 14-16.7.15</span></div>
+                    <div class="btn-get">GET</div>
+                </div>
+                <div class="row" onclick="startInstall('itms-services://?action=download-manifest&url=https://itp67.github.io/api/fugu15.plist')">
+                    <div class="app-icon" style="background-image: url('https://i.imgur.com/x630ZiX.png');"></div>
+                    <div class="content"><span class="title">Fugu15</span><span class="subtitle">iOS 15-15.4.1</span></div>
+                    <div class="btn-get">GET</div>
+                </div>                              
         </div>
     </div>
 
@@ -283,6 +356,20 @@
             clearTimeout(timer);
             document.getElementById('installOverlay').style.display = 'none';
         }
+        function setGlobalStatus(isOnline) {
+    const dot = document.querySelector('.status-dot');
+    const text = document.querySelector('.status-text');
+    
+    if (isOnline) {
+        dot.className = 'status-dot status-online';
+        text.innerText = 'Signed';
+    } else {
+        dot.className = 'status-dot status-offline';
+        text.innerText = 'Revoked';
+    }
+}
+
+// Example: setGlobalStatus(false); // Changes the top-right text and dot color
     </script>
 </body>
 </html>
